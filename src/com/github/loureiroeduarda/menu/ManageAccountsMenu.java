@@ -23,7 +23,7 @@ public class ManageAccountsMenu {
                     service.registerAccount(sc);
                     break;
                 case 2:
-                    System.out.println("Não implementado");
+                    service.removeAccount(sc);
                     break;
                 case 3:
                     System.out.println("Não implementado");

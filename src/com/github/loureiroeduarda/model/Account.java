@@ -28,4 +28,9 @@ public class Account {
     public double getAccountBalance() {
         return accountBalance;
     }
+
+    @Override
+    public String toString() {
+        return "Código do banco: " + bankCode + "\n" + "Número da agência:" + agencyNumber + "\n" + "Número da conta:" + accountNumber + "\n" + "Saldo da conta: " + accountBalance;
+    }
 }
