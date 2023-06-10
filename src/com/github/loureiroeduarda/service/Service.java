@@ -1,5 +1,6 @@
 package com.github.loureiroeduarda.service;
 
+import com.github.loureiroeduarda.model.Account;
 import com.github.loureiroeduarda.repository.RepositoryAccount;
 
 import java.util.Scanner;
@@ -46,7 +47,9 @@ public class Service {
         int accountNumber = convertStringToInt(accountNumberText);
         accountNumber = validateAccountNumber(accountNumber, sc);
 
-        repositoryAccount.saveAccountList(bankCode, agencyNumber, accountNumber);
+        repositoryAccount.saveAccount(bankCode, agencyNumber, accountNumber);
+        System.out.println("Conta cadastrada com sucesso!!");
+        System.out.println(repositoryAccount.listAll());
     }
 
     private int validateCodeBank(int number, Scanner sc) {
@@ -74,5 +77,30 @@ public class Service {
             number = convertStringToInt(accountNumber);
         }
         return number;
+    }
+
+    public void removeAccount(Scanner sc) {
+        System.out.println("Informe o número da conta que deseja remover [10000 à 99999]: ");
+        String accountNumberText = sc.nextLine();
+        int accountNumber = convertStringToInt(accountNumberText);
+        accountNumber = validateAccountNumber(accountNumber, sc);
+
+        Account accountFind = repositoryAccount.getAccount(accountNumber);
+        System.out.println("Todos os dados da conta " + accountFind + " serão excluídos. Para prosseguir com a remoção digite 'R' e para cancelar a remoção digite 'C'.");
+
+        boolean keepGoing = true;
+        while (keepGoing) {
+            String chosenOption = sc.nextLine();
+            if (chosenOption.equalsIgnoreCase("R")) {
+                repositoryAccount.deleteAccount(accountNumber);
+                System.out.println("Conta removida com sucesso!!");
+                keepGoing = false;
+            } else if (chosenOption.equalsIgnoreCase("C")) {
+                System.out.println("A conta não será removida!!");
+                keepGoing = false;
+            } else {
+                System.out.println("Opção inválida!! Por favor, responda com 'R' ou 'C' !!");
+            }
+        }
     }
 }
