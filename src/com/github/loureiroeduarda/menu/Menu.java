@@ -5,7 +5,6 @@ import com.github.loureiroeduarda.service.Service;
 import java.util.Scanner;
 
 public class Menu {
-
     private final Scanner sc;
     private final Service service;
     private final ManageAccountsMenu manageAccountsMenu;
@@ -51,6 +50,4 @@ public class Menu {
             }
         }
     }
-
-
 }

@@ -5,7 +5,6 @@ import com.github.loureiroeduarda.service.Service;
 import java.util.Scanner;
 
 public class ManageTransactionsMenu {
-
     public void manageTransactionsMenu(Scanner sc, Service service) {
         boolean keepGoing = true;
         while (keepGoing) {
@@ -24,7 +23,7 @@ public class ManageTransactionsMenu {
                     System.out.println("Não implementado");
                     break;
                 case 2:
-                    System.out.println("Não implementado");
+                    service.addTransaction(sc);
                     break;
                 case 3:
                     System.out.println("Não implementado");
