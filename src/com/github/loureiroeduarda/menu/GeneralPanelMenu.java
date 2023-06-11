@@ -5,7 +5,6 @@ import com.github.loureiroeduarda.service.Service;
 import java.util.Scanner;
 
 public class GeneralPanelMenu {
-
     public void generalPanelMenu(Scanner sc, Service service) {
         boolean keepGoing = true;
         while (keepGoing) {

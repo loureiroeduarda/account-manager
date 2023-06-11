@@ -5,7 +5,6 @@ import com.github.loureiroeduarda.service.Service;
 import java.util.Scanner;
 
 public class ManageAccountsMenu {
-
     public void manageAccountsMenu(Scanner sc, Service service) {
         boolean keepGoing = true;
         while (keepGoing) {

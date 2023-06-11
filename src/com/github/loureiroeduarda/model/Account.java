@@ -1,11 +1,15 @@
 package com.github.loureiroeduarda.model;
 
-public class Account {
-    int bankCode;
-    int agencyNumber;
-    int accountNumber;
-    double accountBalance;
+import java.util.ArrayList;
+import java.util.List;
 
+public class Account {
+    private final int bankCode;
+    private final int agencyNumber;
+    private final int accountNumber;
+    private double accountBalance = 0;
+
+    private List<Transaction> transactionList = new ArrayList<>();
 
     public Account(int bankCode, int agencyNumber, int accountNumber) {
         this.bankCode = bankCode;
@@ -29,8 +33,21 @@ public class Account {
         return accountBalance;
     }
 
+    public void setAccountBalance(double accountBalance) {
+        this.accountBalance = accountBalance;
+    }
+
+    public List<Transaction> getTransactionList() {
+        return transactionList;
+    }
+
+    public void setTransactionList(List<Transaction> transactionList) {
+        this.transactionList = transactionList;
+    }
+
     @Override
     public String toString() {
-        return "Código do banco: " + bankCode + "\n" + "Número da agência:" + agencyNumber + "\n" + "Número da conta:" + accountNumber + "\n" + "Saldo da conta: " + accountBalance;
+        return "Código do banco: " + bankCode + "\n" + "Número da agência:" + agencyNumber + "\n"
+                + "Número da conta:" + accountNumber + "\n" + "Saldo da conta: " + accountBalance;
     }
 }

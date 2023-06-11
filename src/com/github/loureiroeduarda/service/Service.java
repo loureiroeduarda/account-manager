@@ -1,8 +1,11 @@
 package com.github.loureiroeduarda.service;
 
 import com.github.loureiroeduarda.model.Account;
+import com.github.loureiroeduarda.model.Transaction;
 import com.github.loureiroeduarda.repository.RepositoryAccount;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Service {
@@ -86,7 +89,7 @@ public class Service {
         accountNumber = validateAccountNumber(accountNumber, sc);
 
         Account accountFind = repositoryAccount.getAccount(accountNumber);
-        System.out.println("Todos os dados da conta " + accountFind + " serão excluídos. Para prosseguir com a remoção digite 'R' e para cancelar a remoção digite 'C'.");
+        System.out.println("Todos os dados da conta " + accountFind + " serão excluídos. Para prosseguir com a remoção digite 'R' e para cancelar a remoção digite 'C': ");
 
         boolean keepGoing = true;
         while (keepGoing) {
@@ -102,5 +105,100 @@ public class Service {
                 System.out.println("Opção inválida!! Por favor, responda com 'R' ou 'C' !!");
             }
         }
+    }
+
+    public void addTransaction(Scanner sc) {
+        System.out.println("Para incluir uma nova transação digite o número da conta desejada [10000 à 99999]: ");
+        String accountNumberText = sc.nextLine();
+        int accountNumber = convertStringToInt(accountNumberText);
+        accountNumber = validateAccountNumber(accountNumber, sc);
+
+        Account accountFind = repositoryAccount.getAccount(accountNumber);
+
+        if (accountFind != null) {
+            boolean keepGoing = true;
+            while (keepGoing) {
+                System.out.println("Insira o tipo da transação. Para receita digite 'R', para despesa digite 'D' e para retornar ao menu de gerenciamento de transações digite 'S': ");
+                String chosenOption = sc.nextLine();
+
+                if (chosenOption.equalsIgnoreCase("R")) {
+                    System.out.println("Insira a data da transação [dd/mm/aaaa]: ");
+                    String dateText = sc.nextLine();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDate localDate = LocalDate.parse(dateText, formatter);
+                    System.out.println("Insira a categoria da receita [Ex: Salário]: ");
+                    String revenue = sc.nextLine();
+                    System.out.println("Insira a descrição da receita: ");
+                    String description = sc.nextLine();
+                    System.out.println("Insira o valor da receita: ");
+                    String valueText = sc.nextLine();
+                    double value = convertStringToDouble(valueText);
+                    value = validateTransactionValue(value, sc);
+
+                    Transaction transaction = new Transaction(localDate, chosenOption, revenue, description, value);
+                    accountFind.getTransactionList().add(transaction);
+
+                    double currentBalance = accountFind.getAccountBalance() + value;
+                    accountFind.setAccountBalance(currentBalance);
+                    System.out.println("Seu saldo atual é de R$ " + currentBalance);
+                    System.out.println(repositoryAccount.listAll());
+
+                } else if (chosenOption.equalsIgnoreCase("D")) {
+                    System.out.println("Insira a data da transação [dd/mm/aaaa]: ");
+                    String dateText = sc.nextLine();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDate localDate = LocalDate.parse(dateText, formatter);
+                    System.out.println("Insira a categoria da despesa [Ex: Alimentação, Casa, Luz]: ");
+                    String revenue = sc.nextLine();
+                    System.out.println("Insira a descrição da despesa: ");
+                    String description = sc.nextLine();
+                    System.out.println("Insira o valor da despesa: ");
+                    String valueText = sc.nextLine();
+                    double value = convertStringToDouble(valueText);
+                    value = validateTransactionValue(value, sc);
+
+                    Transaction transaction = new Transaction(localDate, chosenOption, revenue, description, value);
+                    accountFind.getTransactionList().add(transaction);
+
+                    double currentBalance = accountFind.getAccountBalance() - value;
+                    accountFind.setAccountBalance(currentBalance);
+                    System.out.println("Seu saldo atual é de R$ " + currentBalance);
+                    System.out.println(repositoryAccount.listAll());
+
+                } else if (chosenOption.equalsIgnoreCase("S")) {
+                    keepGoing = false;
+
+                } else {
+                    System.out.println("Opção inválida!! Por favor, responda com 'R' ou 'D' !!");
+                }
+            }
+        }
+    }
+
+    private double validateTransactionValue(double number, Scanner sc) {
+        while (number == Double.MAX_VALUE) {
+            System.out.println("Opção inválida! Tente Novamente!!");
+            String value = sc.nextLine();
+            number = convertStringToDouble(value);
+        }
+        return number;
+    }
+
+    public double convertStringToDouble(String valueText) {
+        double optionDouble = Double.MAX_VALUE;
+        try {
+            optionDouble = Double.parseDouble(valueText);
+        } catch (NumberFormatException numberFormatException) {
+            System.out.println("Você não digitou um número!!");
+        }
+        optionDouble = validatePositiveNumber(optionDouble);
+        return optionDouble;
+    }
+
+    private double validatePositiveNumber(Double number) {
+        if (number < 0) {
+            return Double.MAX_VALUE;
+        }
+        return number;
     }
 }
