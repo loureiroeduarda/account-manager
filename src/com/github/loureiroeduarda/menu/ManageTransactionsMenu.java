@@ -26,7 +26,7 @@ public class ManageTransactionsMenu {
                     service.addTransaction(sc);
                     break;
                 case 3:
-                    System.out.println("Não implementado");
+                    service.editLastTransaction(sc);
                     break;
                 case 4:
                     System.out.println("Não implementado");
