@@ -20,7 +20,7 @@ public class ManageTransactionsMenu {
             int chosenOption = service.convertStringToInt(chosenOptionText);
             switch (chosenOption) {
                 case 1:
-                    System.out.println("Não implementado");
+                    service.displayAccountStatement(sc);
                     break;
                 case 2:
                     service.addTransaction(sc);

@@ -349,5 +349,26 @@ public class Service {
     public void loadData() {
         repositoryAccount.loadAccounts();
     }
+
+    public void displayAccountStatement(Scanner sc) {
+        System.out.println("Para exibir o extrato digite o número da conta desejada [10000 à 99999]: ");
+        String accountText = sc.nextLine();
+        int account = convertStringToInt(accountText);
+        account = validateAccountNumber(account, sc);
+        Account accountFind = validateAccount(sc, account);
+
+        accountFind.getTransactionList().sort(new TransactionDateComparator());
+
+        double partialBalance = 0;
+        for(Transaction transaction : accountFind.getTransactionList()) {
+            if(transaction.getType().equalsIgnoreCase("R")) {
+                partialBalance += transaction.getValue();
+            } else {
+                partialBalance -= transaction.getValue();
+            }
+            System.out.println(transaction);
+            System.out.println(partialBalance);
+        }
+    }
 }
 

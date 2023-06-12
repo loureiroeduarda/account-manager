@@ -47,7 +47,7 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Código do banco: " + bankCode + "\n" + "Número da agência:" + agencyNumber + "\n"
-                + "Número da conta:" + accountNumber + "\n" + "Saldo da conta: " + accountBalance;
+        return "Código do banco: " + bankCode + "Número da agência:" + agencyNumber + "Número da conta:"
+                + accountNumber + "Saldo da conta: " + accountBalance;
     }
 }
