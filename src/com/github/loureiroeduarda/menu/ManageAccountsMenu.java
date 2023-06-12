@@ -25,7 +25,7 @@ public class ManageAccountsMenu {
                     service.removeAccount(sc);
                     break;
                 case 3:
-                    System.out.println("Não implementado");
+                    service.mergeAccounts(sc);
                     break;
                 case 0:
                     keepGoing = false;
