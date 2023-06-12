@@ -2,6 +2,7 @@ package com.github.loureiroeduarda.service;
 
 import com.github.loureiroeduarda.model.Account;
 import com.github.loureiroeduarda.model.Transaction;
+import com.github.loureiroeduarda.model.TransactionDateComparator;
 import com.github.loureiroeduarda.repository.RepositoryAccount;
 
 import java.time.LocalDate;
@@ -272,6 +273,26 @@ public class Service {
             return account.getAccountBalance() - transaction.getValue();
         }
         return account.getAccountBalance() + transaction.getValue();
+    }
+
+    public void mergeAccounts(Scanner sc) {
+        System.out.println("Para mesclar contas digite o número da conta de origem [10000 à 99999]: ");
+        String sourceAccountText = sc.nextLine();
+        int sourceAccount = convertStringToInt(sourceAccountText);
+        sourceAccount = validateAccountNumber(sourceAccount, sc);
+        Account sourceAccountFind = repositoryAccount.getAccount(sourceAccount);
+
+        System.out.println("Para mesclar contas digite o número da conta de destino [10000 à 99999]: ");
+        String destinationAccountText = sc.nextLine();
+        int destinationAccount = convertStringToInt(destinationAccountText);
+        destinationAccount = validateAccountNumber(destinationAccount, sc);
+        Account destinationAccountFind = repositoryAccount.getAccount(destinationAccount);
+
+        destinationAccountFind.getTransactionList().addAll(sourceAccountFind.getTransactionList());
+        sourceAccountFind.getTransactionList().clear();
+
+        destinationAccountFind.getTransactionList().sort(new TransactionDateComparator());
+        System.out.println(destinationAccountFind.getTransactionList());
     }
 }
 
