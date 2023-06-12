@@ -22,7 +22,7 @@ public class GeneralPanelMenu {
                     service.summaryOfAccounts();
                     break;
                 case 2:
-                    System.out.println("Não implementado");
+                    service.summaryOfIncomeExpensesForMonth();
                     break;
                 case 3:
                     System.out.println("Não implementado");

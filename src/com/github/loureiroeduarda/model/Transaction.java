@@ -59,7 +59,7 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Data: " + date +
+        return " Data: " + date +
                 " | Tipo: " + type +
                 " | Categoria: " + category +
                 " | Descrição: " + description +
