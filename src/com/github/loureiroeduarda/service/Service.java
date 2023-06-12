@@ -119,57 +119,31 @@ public class Service {
             boolean keepGoing = true;
             while (keepGoing) {
                 System.out.println("Insira o tipo da transação. Para receita digite 'R', para despesa digite 'D' e para retornar ao menu de gerenciamento de transações digite 'S': ");
-                String chosenOption = sc.nextLine();
+                String type = sc.nextLine();
 
-                if (chosenOption.equalsIgnoreCase("R")) {
-                    System.out.println("Insira a data da transação [dd/mm/aaaa]: ");
-                    String dateText = sc.nextLine();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                    LocalDate localDate = LocalDate.parse(dateText, formatter);
-                    System.out.println("Insira a categoria da receita [Ex: Salário]: ");
-                    String revenue = sc.nextLine();
-                    System.out.println("Insira a descrição da receita: ");
-                    String description = sc.nextLine();
-                    System.out.println("Insira o valor da receita: ");
-                    String valueText = sc.nextLine();
-                    double value = convertStringToDouble(valueText);
-                    value = validateTransactionValue(value, sc);
-
-                    Transaction transaction = new Transaction(localDate, chosenOption, revenue, description, value);
+                if (type.equalsIgnoreCase("R")) {
+                    Transaction transaction = createRevenueTransaction(sc, type);
                     accountFind.getTransactionList().add(transaction);
 
-                    double currentBalance = accountFind.getAccountBalance() + value;
+                    double currentBalance = accountFind.getAccountBalance() + transaction.getValue();
                     accountFind.setAccountBalance(currentBalance);
                     System.out.println("Seu saldo atual é de R$ " + currentBalance);
                     System.out.println(repositoryAccount.listAll());
 
-                } else if (chosenOption.equalsIgnoreCase("D")) {
-                    System.out.println("Insira a data da transação [dd/mm/aaaa]: ");
-                    String dateText = sc.nextLine();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                    LocalDate localDate = LocalDate.parse(dateText, formatter);
-                    System.out.println("Insira a categoria da despesa [Ex: Alimentação, Casa, Luz]: ");
-                    String revenue = sc.nextLine();
-                    System.out.println("Insira a descrição da despesa: ");
-                    String description = sc.nextLine();
-                    System.out.println("Insira o valor da despesa: ");
-                    String valueText = sc.nextLine();
-                    double value = convertStringToDouble(valueText);
-                    value = validateTransactionValue(value, sc);
-
-                    Transaction transaction = new Transaction(localDate, chosenOption, revenue, description, value);
+                } else if (type.equalsIgnoreCase("D")) {
+                    Transaction transaction = createExpenseTransaction(sc, type);
                     accountFind.getTransactionList().add(transaction);
 
-                    double currentBalance = accountFind.getAccountBalance() - value;
+                    double currentBalance = accountFind.getAccountBalance() - transaction.getValue();
                     accountFind.setAccountBalance(currentBalance);
                     System.out.println("Seu saldo atual é de R$ " + currentBalance);
                     System.out.println(repositoryAccount.listAll());
 
-                } else if (chosenOption.equalsIgnoreCase("S")) {
+                } else if (type.equalsIgnoreCase("S")) {
                     keepGoing = false;
 
                 } else {
-                    System.out.println("Opção inválida!! Por favor, responda com 'R' ou 'D' !!");
+                    System.out.println("Opção inválida!! Por favor, responda com 'R', 'D' OU 'S' !!");
                 }
             }
         }
@@ -201,4 +175,103 @@ public class Service {
         }
         return number;
     }
+
+    private Transaction createRevenueTransaction(Scanner sc, String type) {
+        System.out.println("Insira a data da transação [dd/mm/aaaa]: ");
+        String dateText = sc.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate localDate = LocalDate.parse(dateText, formatter);
+        System.out.println("Insira a categoria da receita [Ex: Salário]: ");
+        String revenue = sc.nextLine();
+        System.out.println("Insira a descrição da receita: ");
+        String description = sc.nextLine();
+        System.out.println("Insira o valor da receita: ");
+        String valueText = sc.nextLine();
+        double value = convertStringToDouble(valueText);
+        value = validateTransactionValue(value, sc);
+
+        return new Transaction(localDate, type, revenue, description, value);
+    }
+
+    private Transaction createExpenseTransaction(Scanner sc, String type) {
+        System.out.println("Insira a data da transação [dd/mm/aaaa]: ");
+        String dateText = sc.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate localDate = LocalDate.parse(dateText, formatter);
+        System.out.println("Insira a categoria da despesa [Ex: Alimentação, Casa, Luz]: ");
+        String expense = sc.nextLine();
+        System.out.println("Insira a descrição da despesa: ");
+        String description = sc.nextLine();
+        System.out.println("Insira o valor da despesa: ");
+        String valueText = sc.nextLine();
+        double value = convertStringToDouble(valueText);
+        value = validateTransactionValue(value, sc);
+
+        return new Transaction(localDate, type, expense, description, value);
+    }
+
+    public void editLastTransaction(Scanner sc) {
+        System.out.println("Para editar a última transação adcionada digite o número da conta correspondente [10000 à 99999]: ");
+        String accountNumberText = sc.nextLine();
+        int accountNumber = convertStringToInt(accountNumberText);
+        accountNumber = validateAccountNumber(accountNumber, sc);
+
+        Account accountFind = repositoryAccount.getAccount(accountNumber);
+
+        if (accountFind != null) {
+            boolean keepGoing = true;
+            while (keepGoing) {
+                System.out.println("Para editar a última transação digite 'E' e para retornar ao menu de gerenciamento de transações digite 'S': ");
+                String chosenOption = sc.nextLine();
+                if (chosenOption.equalsIgnoreCase("E")) {
+                    int transactionListSize = accountFind.getTransactionList().size();
+                    Transaction transaction = accountFind.getTransactionList().get(transactionListSize - 1);
+
+                    System.out.println("Informe o tipo da transação que deseja cadastradar. Para receita digite 'R' e para despesa digite 'D': ");
+                    String type = sc.nextLine();
+                    while (!type.equalsIgnoreCase("R") && !type.equalsIgnoreCase("D")) {
+                        System.out.println("Opção inválida!! Por favor, responda com 'R' ou 'D' !!");
+                        type = sc.nextLine();
+                    }
+                    if (type.equalsIgnoreCase("R")) {
+                        double accountBalance = updateAccountBalance(accountFind, transaction);
+                        transaction = createRevenueTransaction(sc, type);
+                        accountFind.getTransactionList().add(transactionListSize - 1, transaction);
+                        accountBalance += transaction.getValue();
+                        accountFind.setAccountBalance(accountBalance);
+
+                        System.out.println("A última transação foi editada com sucesso!!");
+                        keepGoing = false;
+
+                    } else if (type.equalsIgnoreCase("D")) {
+                        double accountBalance = updateAccountBalance(accountFind, transaction);
+                        transaction = createExpenseTransaction(sc, type);
+                        accountFind.getTransactionList().add(transactionListSize - 1, transaction);
+                        accountBalance += transaction.getValue();
+                        accountFind.setAccountBalance(accountBalance);
+
+                        System.out.println("A última transação foi editada com sucesso!!");
+                        keepGoing = false;
+
+                    } else {
+                        System.out.println("Opção inválida!! Por favor, responda com 'R' ou 'D' !!");
+                    }
+
+                } else if (chosenOption.equalsIgnoreCase("S")) {
+                    keepGoing = false;
+
+                } else {
+                    System.out.println("Opção inválida!! Por favor, responda com 'E' ou 'S' !!");
+                }
+            }
+        }
+    }
+
+    public double updateAccountBalance(Account account, Transaction transaction) {
+        if (transaction.getType().equalsIgnoreCase("R")) {
+            return account.getAccountBalance() - transaction.getValue();
+        }
+        return account.getAccountBalance() + transaction.getValue();
+    }
 }
+
