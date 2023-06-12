@@ -7,6 +7,7 @@ import com.github.loureiroeduarda.repository.RepositoryAccount;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Scanner;
 
 public class Service {
@@ -369,6 +370,17 @@ public class Service {
             System.out.println(transaction);
             System.out.println(partialBalance);
         }
+    }
+
+    public void summaryOfAccounts() {
+        List<Account> accountList = repositoryAccount.listAll();
+
+        double balance = 0;
+        for(Account account : accountList) {
+            balance += account.getAccountBalance();
+            System.out.println(account);
+        }
+        System.out.println("O saldo total considerando todas as contas cadastrada é de R$: " + balance);
     }
 }
 

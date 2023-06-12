@@ -19,7 +19,7 @@ public class GeneralPanelMenu {
             int chosenOption = service.convertStringToInt(chosenOptionText);
             switch (chosenOption) {
                 case 1:
-                    System.out.println("Não implementado");
+                    service.summaryOfAccounts();
                     break;
                 case 2:
                     System.out.println("Não implementado");
