@@ -123,7 +123,7 @@ public class Service {
                 String type = sc.nextLine();
 
                 if (type.equalsIgnoreCase("R")) {
-                    Transaction transaction = createRevenueTransaction(sc, type);
+                    Transaction transaction = createIncomeTransaction(sc, type);
                     AccountNumberFind.getTransactionList().add(transaction);
 
                     double currentBalance = AccountNumberFind.getAccountBalance() + transaction.getValue();
@@ -177,13 +177,13 @@ public class Service {
         return number;
     }
 
-    private Transaction createRevenueTransaction(Scanner sc, String type) {
+    private Transaction createIncomeTransaction(Scanner sc, String type) {
         System.out.println("Insira a data da transação [dd/mm/aaaa]: ");
         String dateText = sc.nextLine();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate localDate = LocalDate.parse(dateText, formatter);
         System.out.println("Insira a categoria da receita [Ex: Salário]: ");
-        String revenue = sc.nextLine();
+        String income = sc.nextLine();
         System.out.println("Insira a descrição da receita: ");
         String description = sc.nextLine();
         System.out.println("Insira o valor da receita: ");
@@ -191,7 +191,7 @@ public class Service {
         double value = convertStringToDouble(valueText);
         value = validateTransactionValue(value, sc);
 
-        return new Transaction(localDate, type, revenue, description, value);
+        return new Transaction(localDate, type, income, description, value);
     }
 
     private Transaction createExpenseTransaction(Scanner sc, String type) {
@@ -235,7 +235,7 @@ public class Service {
                     }
                     if (type.equalsIgnoreCase("R")) {
                         double accountBalance = updateAccountBalance(AccountNumberFind, transaction);
-                        transaction = createRevenueTransaction(sc, type);
+                        transaction = createIncomeTransaction(sc, type);
                         AccountNumberFind.getTransactionList().add(transactionListSize - 1, transaction);
                         accountBalance += transaction.getValue();
                         AccountNumberFind.setAccountBalance(accountBalance);
@@ -381,6 +381,30 @@ public class Service {
             System.out.println(account);
         }
         System.out.println("O saldo total considerando todas as contas cadastrada é de R$: " + balance);
+    }
+
+    public void summaryOfIncomeExpensesForMonth() {
+        List<Account> accountList = repositoryAccount.listAll();
+
+        for(Account account : accountList) {
+            double income = 0;
+            String incomeText = "";
+            double expense = 0;
+            String expenseText = "";
+            for(Transaction transaction : account.getTransactionList()) {
+                if(LocalDate.now().getMonth() == transaction.getDate().getMonth()) {
+                    if(transaction.getType().equalsIgnoreCase("R")){
+                        income += transaction.getValue();
+                        incomeText = incomeText.concat(transaction.toString()).concat(" ");
+                    } else {
+                        expense += transaction.getValue();
+                        expenseText = expenseText.concat(transaction.toString()).concat(" ");
+                    }
+                }
+            }
+            System.out.println("Resumo das receitas do mês atual da conta nº. " + account.getAccountNumber() + ": " + income + incomeText);
+            System.out.println("Resumo das despesas do mês atual da conta nº. " + account.getAccountNumber() + ": " + expense + expenseText);
+        }
     }
 }
 
