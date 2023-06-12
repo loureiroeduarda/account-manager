@@ -20,6 +20,7 @@ public class Menu {
     }
 
     public void menu() {
+        service.loadData();
         boolean keepGoing = true;
         while (keepGoing) {
             System.out.println("===============================================");
