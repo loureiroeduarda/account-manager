@@ -345,5 +345,9 @@ public class Service {
         }
         return account;
     }
+
+    public void loadData() {
+        repositoryAccount.loadAccounts();
+    }
 }
 
