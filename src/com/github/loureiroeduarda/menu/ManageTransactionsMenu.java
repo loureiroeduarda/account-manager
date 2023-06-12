@@ -29,7 +29,7 @@ public class ManageTransactionsMenu {
                     service.editLastTransaction(sc);
                     break;
                 case 4:
-                    System.out.println("Não implementado");
+                    service.transferFunds(sc);
                     break;
                 case 0:
                     keepGoing = false;

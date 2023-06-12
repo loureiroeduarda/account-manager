@@ -88,9 +88,9 @@ public class Service {
         String accountNumberText = sc.nextLine();
         int accountNumber = convertStringToInt(accountNumberText);
         accountNumber = validateAccountNumber(accountNumber, sc);
+        Account AccountNumberFind = validateAccount(sc, accountNumber);
 
-        Account accountFind = repositoryAccount.getAccount(accountNumber);
-        System.out.println("Todos os dados da conta " + accountFind + " serão excluídos. Para prosseguir com a remoção digite 'R' e para cancelar a remoção digite 'C': ");
+        System.out.println("Todos os dados da conta " + AccountNumberFind + " serão excluídos. Para prosseguir com a remoção digite 'R' e para cancelar a remoção digite 'C': ");
 
         boolean keepGoing = true;
         while (keepGoing) {
@@ -113,10 +113,9 @@ public class Service {
         String accountNumberText = sc.nextLine();
         int accountNumber = convertStringToInt(accountNumberText);
         accountNumber = validateAccountNumber(accountNumber, sc);
+        Account AccountNumberFind = validateAccount(sc, accountNumber);
 
-        Account accountFind = repositoryAccount.getAccount(accountNumber);
-
-        if (accountFind != null) {
+        if (AccountNumberFind != null) {
             boolean keepGoing = true;
             while (keepGoing) {
                 System.out.println("Insira o tipo da transação. Para receita digite 'R', para despesa digite 'D' e para retornar ao menu de gerenciamento de transações digite 'S': ");
@@ -124,19 +123,19 @@ public class Service {
 
                 if (type.equalsIgnoreCase("R")) {
                     Transaction transaction = createRevenueTransaction(sc, type);
-                    accountFind.getTransactionList().add(transaction);
+                    AccountNumberFind.getTransactionList().add(transaction);
 
-                    double currentBalance = accountFind.getAccountBalance() + transaction.getValue();
-                    accountFind.setAccountBalance(currentBalance);
+                    double currentBalance = AccountNumberFind.getAccountBalance() + transaction.getValue();
+                    AccountNumberFind.setAccountBalance(currentBalance);
                     System.out.println("Seu saldo atual é de R$ " + currentBalance);
                     System.out.println(repositoryAccount.listAll());
 
                 } else if (type.equalsIgnoreCase("D")) {
                     Transaction transaction = createExpenseTransaction(sc, type);
-                    accountFind.getTransactionList().add(transaction);
+                    AccountNumberFind.getTransactionList().add(transaction);
 
-                    double currentBalance = accountFind.getAccountBalance() - transaction.getValue();
-                    accountFind.setAccountBalance(currentBalance);
+                    double currentBalance = AccountNumberFind.getAccountBalance() - transaction.getValue();
+                    AccountNumberFind.setAccountBalance(currentBalance);
                     System.out.println("Seu saldo atual é de R$ " + currentBalance);
                     System.out.println(repositoryAccount.listAll());
 
@@ -216,17 +215,16 @@ public class Service {
         String accountNumberText = sc.nextLine();
         int accountNumber = convertStringToInt(accountNumberText);
         accountNumber = validateAccountNumber(accountNumber, sc);
+        Account AccountNumberFind = validateAccount(sc, accountNumber);
 
-        Account accountFind = repositoryAccount.getAccount(accountNumber);
-
-        if (accountFind != null) {
+        if (AccountNumberFind != null) {
             boolean keepGoing = true;
             while (keepGoing) {
                 System.out.println("Para editar a última transação digite 'E' e para retornar ao menu de gerenciamento de transações digite 'S': ");
                 String chosenOption = sc.nextLine();
                 if (chosenOption.equalsIgnoreCase("E")) {
-                    int transactionListSize = accountFind.getTransactionList().size();
-                    Transaction transaction = accountFind.getTransactionList().get(transactionListSize - 1);
+                    int transactionListSize = AccountNumberFind.getTransactionList().size();
+                    Transaction transaction = AccountNumberFind.getTransactionList().get(transactionListSize - 1);
 
                     System.out.println("Informe o tipo da transação que deseja cadastradar. Para receita digite 'R' e para despesa digite 'D': ");
                     String type = sc.nextLine();
@@ -235,21 +233,21 @@ public class Service {
                         type = sc.nextLine();
                     }
                     if (type.equalsIgnoreCase("R")) {
-                        double accountBalance = updateAccountBalance(accountFind, transaction);
+                        double accountBalance = updateAccountBalance(AccountNumberFind, transaction);
                         transaction = createRevenueTransaction(sc, type);
-                        accountFind.getTransactionList().add(transactionListSize - 1, transaction);
+                        AccountNumberFind.getTransactionList().add(transactionListSize - 1, transaction);
                         accountBalance += transaction.getValue();
-                        accountFind.setAccountBalance(accountBalance);
+                        AccountNumberFind.setAccountBalance(accountBalance);
 
                         System.out.println("A última transação foi editada com sucesso!!");
                         keepGoing = false;
 
                     } else if (type.equalsIgnoreCase("D")) {
-                        double accountBalance = updateAccountBalance(accountFind, transaction);
+                        double accountBalance = updateAccountBalance(AccountNumberFind, transaction);
                         transaction = createExpenseTransaction(sc, type);
-                        accountFind.getTransactionList().add(transactionListSize - 1, transaction);
+                        AccountNumberFind.getTransactionList().add(transactionListSize - 1, transaction);
                         accountBalance += transaction.getValue();
-                        accountFind.setAccountBalance(accountBalance);
+                        AccountNumberFind.setAccountBalance(accountBalance);
 
                         System.out.println("A última transação foi editada com sucesso!!");
                         keepGoing = false;
@@ -280,19 +278,72 @@ public class Service {
         String sourceAccountText = sc.nextLine();
         int sourceAccount = convertStringToInt(sourceAccountText);
         sourceAccount = validateAccountNumber(sourceAccount, sc);
-        Account sourceAccountFind = repositoryAccount.getAccount(sourceAccount);
+        Account sourceAccountFind = validateAccount(sc, sourceAccount);
 
         System.out.println("Para mesclar contas digite o número da conta de destino [10000 à 99999]: ");
         String destinationAccountText = sc.nextLine();
         int destinationAccount = convertStringToInt(destinationAccountText);
         destinationAccount = validateAccountNumber(destinationAccount, sc);
-        Account destinationAccountFind = repositoryAccount.getAccount(destinationAccount);
+        Account destinationAccountFind = validateAccount(sc, destinationAccount);
 
         destinationAccountFind.getTransactionList().addAll(sourceAccountFind.getTransactionList());
         sourceAccountFind.getTransactionList().clear();
 
         destinationAccountFind.getTransactionList().sort(new TransactionDateComparator());
         System.out.println(destinationAccountFind.getTransactionList());
+    }
+
+    public void transferFunds(Scanner sc) {
+        System.out.println("Para transferir valores digite o número da conta de origem [10000 à 99999]: ");
+        String sourceAccountText = sc.nextLine();
+        int sourceAccount = convertStringToInt(sourceAccountText);
+        sourceAccount = validateAccountNumber(sourceAccount, sc);
+        Account sourceAccountFind = validateAccount(sc, sourceAccount);
+
+        System.out.println("Para transferir valores digite o número da conta de destino [10000 à 99999]: ");
+        String destinationAccountText = sc.nextLine();
+        int destinationAccount = convertStringToInt(destinationAccountText);
+        destinationAccount = validateAccountNumber(destinationAccount, sc);
+        Account destinationAccountFind = validateAccount(sc, destinationAccount);
+
+        boolean keepGoing = true;
+        while (keepGoing) {
+            System.out.println("Informe o valor que deseja transferir para a conta informada: ");
+            String amountTransferredText = sc.nextLine();
+            double amountTransferred = convertStringToDouble(amountTransferredText);
+            amountTransferred = validateTransactionValue(amountTransferred, sc);
+
+            if (amountTransferred <= sourceAccountFind.getAccountBalance()) {
+                double sourceAccountCurrentBalance = sourceAccountFind.getAccountBalance() - amountTransferred;
+                sourceAccountFind.setAccountBalance(sourceAccountCurrentBalance);
+                double targetAccountCurrentBalance = destinationAccountFind.getAccountBalance() + amountTransferred;
+                destinationAccountFind.setAccountBalance(targetAccountCurrentBalance);
+
+                Transaction sourceTransaction = new Transaction(LocalDate.now(), "D", "Saque", "Saque", amountTransferred);
+                sourceAccountFind.getTransactionList().add(sourceTransaction);
+
+                Transaction destinationTransaction = new Transaction(LocalDate.now(), "R", "Depósito", "Depósito", amountTransferred);
+                destinationAccountFind.getTransactionList().add(destinationTransaction);
+
+                System.out.println("A transferência de valores foi realizada com sucesso!!");
+                System.out.println(repositoryAccount.listAll());
+                keepGoing = false;
+            } else {
+                System.out.println("O saldo é insuficiente para concluir a transação!!");
+            }
+        }
+    }
+
+    private Account validateAccount(Scanner sc, int accountNumber) {
+        Account account = repositoryAccount.getAccount(accountNumber);
+        while (account == null) {
+            System.out.println("Está conta não existe!! Digite uma conta válida!!");
+            String accountText = sc.nextLine();
+            int newAccountNumber = convertStringToInt(accountText);
+            newAccountNumber = validateAccountNumber(accountNumber, sc);
+            account = repositoryAccount.getAccount(accountNumber);
+        }
+        return account;
     }
 }
 
