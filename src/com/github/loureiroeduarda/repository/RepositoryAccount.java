@@ -69,7 +69,19 @@ public class RepositoryAccount {
 
     private void createTransaction(LocalDate date, String type, String category, String description, Double value, int accountNumber) {
         Transaction transaction = new Transaction(date, type, category, description, value);
-        getAccount(accountNumber).getTransactionList().add(transaction);
+        Account account = getAccount(accountNumber);
+        account.getTransactionList().add(transaction);
+        updateAccountBalance(account, transaction);
+    }
+
+    public void updateAccountBalance(Account account, Transaction transaction) {
+        double currentBalance;
+        if (transaction.getType().equalsIgnoreCase("R")) {
+            currentBalance = account.getAccountBalance() + transaction.getValue();
+        } else {
+            currentBalance = account.getAccountBalance() - transaction.getValue();
+        }
+        account.setAccountBalance(currentBalance);
     }
 
     public void deleteAccount(int accountNumber) {
