@@ -1,4 +1,6 @@
-package com.github.loureiroeduarda.model;
+package com.github.loureiroeduarda.utility;
+
+import com.github.loureiroeduarda.model.Transaction;
 
 import java.util.Comparator;
 

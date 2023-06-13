@@ -1,6 +1,7 @@
 package com.github.loureiroeduarda.menu;
 
 import com.github.loureiroeduarda.service.Service;
+import com.github.loureiroeduarda.utility.ConvertNumber;
 
 import java.util.Scanner;
 
@@ -32,7 +33,7 @@ public class Menu {
             System.out.println("0 - Encerrar o sistema");
             System.out.println("===============================================");
             String chosenOptionText = sc.nextLine();
-            int chosenOption = service.convertStringToInt(chosenOptionText);
+            int chosenOption = ConvertNumber.convertToInt(chosenOptionText);
             switch (chosenOption) {
                 case 1:
                     manageAccountsMenu.manageAccountsMenu(sc, service);
