@@ -8,6 +8,8 @@ import com.github.loureiroeduarda.repository.RepositoryAccount;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.*;
 
 public class Service {
@@ -178,10 +180,7 @@ public class Service {
     }
 
     private Transaction createIncomeTransaction(Scanner sc, String type) {
-        System.out.println("Insira a data da transação [dd/mm/aaaa]: ");
-        String dateText = sc.nextLine();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate localDate = LocalDate.parse(dateText, formatter);
+        LocalDate localDate = readDate(sc);
         System.out.println("Insira a categoria da receita [Ex: Salário]: ");
         String income = sc.nextLine();
         System.out.println("Insira a descrição da receita: ");
@@ -195,10 +194,7 @@ public class Service {
     }
 
     private Transaction createExpenseTransaction(Scanner sc, String type) {
-        System.out.println("Insira a data da transação [dd/mm/aaaa]: ");
-        String dateText = sc.nextLine();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate localDate = LocalDate.parse(dateText, formatter);
+        LocalDate localDate = readDate(sc);
         System.out.println("Insira a categoria da despesa [Ex: Alimentação, Casa, Luz]: ");
         String expense = sc.nextLine();
         System.out.println("Insira a descrição da despesa: ");
@@ -209,6 +205,37 @@ public class Service {
         value = validateTransactionValue(value, sc);
 
         return new Transaction(localDate, type, expense, description, value);
+    }
+
+    private LocalDate readDate(Scanner sc) {
+        System.out.println("Insira a data da transação [dd/mm/aaaa]: ");
+        String dateText = sc.nextLine();
+        LocalDate localDate = validateDate(dateText);
+
+        while (localDate == null) {
+            dateText = sc.nextLine();
+            localDate = validateDate(dateText);
+        }
+        return localDate;
+    }
+
+    public LocalDate validateDate(String dateText) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(ResolverStyle.STRICT);
+        try {
+            LocalDate localDate = LocalDate.parse(dateText, formatter);
+            return validateFutureDate(localDate);
+        } catch (DateTimeParseException dateTimeParseException) {
+            System.out.println("Data inválida!! Digite novamente!!");
+        }
+        return null;
+    }
+
+    public LocalDate validateFutureDate(LocalDate localDate) {
+        if (localDate.isAfter(LocalDate.now())) {
+            System.out.println("O sistema não trabalha com agendamentos!!");
+            return null;
+        }
+        return localDate;
     }
 
     public void editLastTransaction(Scanner sc) {
