@@ -25,7 +25,7 @@ public class GeneralPanelMenu {
                     service.summaryOfIncomeExpensesForMonth();
                     break;
                 case 3:
-                    System.out.println("Não implementado");
+                    service.balanceGenerateLastSixMonths();
                     break;
                 case 0:
                     keepGoing = false;

@@ -6,9 +6,9 @@ import com.github.loureiroeduarda.model.TransactionDateComparator;
 import com.github.loureiroeduarda.repository.RepositoryAccount;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Service {
 
@@ -361,8 +361,8 @@ public class Service {
         accountFind.getTransactionList().sort(new TransactionDateComparator());
 
         double partialBalance = 0;
-        for(Transaction transaction : accountFind.getTransactionList()) {
-            if(transaction.getType().equalsIgnoreCase("R")) {
+        for (Transaction transaction : accountFind.getTransactionList()) {
+            if (transaction.getType().equalsIgnoreCase("R")) {
                 partialBalance += transaction.getValue();
             } else {
                 partialBalance -= transaction.getValue();
@@ -376,7 +376,7 @@ public class Service {
         List<Account> accountList = repositoryAccount.listAll();
 
         double balance = 0;
-        for(Account account : accountList) {
+        for (Account account : accountList) {
             balance += account.getAccountBalance();
             System.out.println(account);
         }
@@ -386,14 +386,14 @@ public class Service {
     public void summaryOfIncomeExpensesForMonth() {
         List<Account> accountList = repositoryAccount.listAll();
 
-        for(Account account : accountList) {
+        for (Account account : accountList) {
             double income = 0;
             String incomeText = "";
             double expense = 0;
             String expenseText = "";
-            for(Transaction transaction : account.getTransactionList()) {
-                if(LocalDate.now().getMonth() == transaction.getDate().getMonth()) {
-                    if(transaction.getType().equalsIgnoreCase("R")){
+            for (Transaction transaction : account.getTransactionList()) {
+                if (LocalDate.now().getMonth() == transaction.getDate().getMonth()) {
+                    if (transaction.getType().equalsIgnoreCase("R")) {
                         income += transaction.getValue();
                         incomeText = incomeText.concat(transaction.toString()).concat(" ");
                     } else {
@@ -404,6 +404,35 @@ public class Service {
             }
             System.out.println("Resumo das receitas do mês atual da conta nº. " + account.getAccountNumber() + ": " + income + incomeText);
             System.out.println("Resumo das despesas do mês atual da conta nº. " + account.getAccountNumber() + ": " + expense + expenseText);
+        }
+    }
+
+    public void balanceGenerateLastSixMonths() {
+        List<Account> allAccounts = repositoryAccount.listAll();
+        LocalDate currentDateMinusSixMonths = LocalDate.now().minusMonths(6);
+
+        Map<Month, List<Transaction>> mapTransactionsByMonth = new HashMap<>();
+
+        for (Account account : allAccounts) {
+            for (Transaction transaction : account.getTransactionList()) {
+                if (transaction.getDate().isAfter(currentDateMinusSixMonths)) {
+                    mapTransactionsByMonth.putIfAbsent(transaction.getDate().getMonth(), new ArrayList<>());
+                    mapTransactionsByMonth.get(transaction.getDate().getMonth()).add(transaction);
+                }
+            }
+
+            for (Map.Entry<Month, List<Transaction>> entry : mapTransactionsByMonth.entrySet()) {
+                List<Transaction> transactionsByMonth = entry.getValue();
+                double monthbalance = 0.0;
+                for (Transaction transaction : transactionsByMonth) {
+                    if (transaction.getType().equalsIgnoreCase("R")) {
+                        monthbalance += transaction.getValue();
+                    } else {
+                        monthbalance -= transaction.getValue();
+                    }
+                }
+                System.out.println("Conta nº. " + account.getAccountNumber() + ": O saldo do mês de " + entry.getKey() + " é R$ " + monthbalance);
+            }
         }
     }
 }
