@@ -61,10 +61,10 @@ public class Service {
                 System.out.println("Conta removida com sucesso!!");
                 keepGoing = false;
             } else if (chosenOption.equalsIgnoreCase("C")) {
-                System.out.println("A conta não será removida!!");
+                System.out.println("A conta não foi removida!!");
                 keepGoing = false;
             } else {
-                System.out.println("Opção inválida!! Por favor, responda com 'R' ou 'C' !!");
+                System.out.println("Opção inválida! Por favor, responda com 'R' ou 'C' !!");
             }
         }
     }
@@ -118,7 +118,7 @@ public class Service {
                 System.out.println(" Saldo: R$ " + partialBalance);
             }
         } else {
-            System.out.println(" Está conta não possui transações!");
+            System.out.println(" Esta conta não possui transações!!");
         }
         System.out.println(" Saldo total: R$ " + accountFind.getAccountBalance());
     }
@@ -160,7 +160,7 @@ public class Service {
                     keepGoing = false;
 
                 } else {
-                    System.out.println("Opção inválida!! Por favor, responda com 'R', 'D' OU 'S' !!");
+                    System.out.println("Opção inválida! Por favor, responda com 'R', 'D' OU 'S' !!");
                 }
             }
         }
@@ -171,13 +171,13 @@ public class Service {
         String accountNumberText = sc.nextLine();
         int accountNumber = ConvertNumber.convertToInt(accountNumberText);
         accountNumber = Validator.validateAccountNumber(accountNumber, sc);
-        Account AccountNumberFind = findAccount(sc, accountNumber);
+        Account account = findAccount(sc, accountNumber);
 
-        if (AccountNumberFind != null) {
+        if (account != null) {
             boolean keepGoing = true;
             while (keepGoing) {
-                int transactionListSize = AccountNumberFind.getTransactionList().size();
-                Transaction transaction = AccountNumberFind.getTransactionList().get(transactionListSize - 1);
+                int transactionListSize = account.getTransactionList().size();
+                Transaction transaction = account.getTransactionList().get(transactionListSize - 1);
                 System.out.println("A edição será realizada na seguinte transação (" + transaction + ")");
                 System.out.println("Para editar esta transação digite 'E' e para retornar ao menu de gerenciamento de transações digite 'S': ");
                 String chosenOption = sc.nextLine();
@@ -186,38 +186,39 @@ public class Service {
                     System.out.println("Informe o tipo da transação que deseja cadastradar. Para receita digite 'R' e para despesa digite 'D': ");
                     String type = sc.nextLine();
                     while (!type.equalsIgnoreCase("R") && !type.equalsIgnoreCase("D")) {
-                        System.out.println("Opção inválida!! Por favor, responda com 'R' ou 'D' !!");
+                        System.out.println("Opção inválida! Por favor, responda com 'R' ou 'D' !!");
                         type = sc.nextLine();
                     }
-                    if (type.equalsIgnoreCase("R")) {
-                        double accountBalance = updateAccountBalance(AccountNumberFind, transaction);
-                        transaction = createIncomeTransaction(sc, type);
-                        AccountNumberFind.getTransactionList().set(transactionListSize - 1, transaction);
-                        accountBalance += transaction.getValue();
-                        AccountNumberFind.setAccountBalance(accountBalance);
 
-                        System.out.println("A última transação foi editada com sucesso!!");
+                    if (type.equalsIgnoreCase("R")) {
+                        double accountBalance = updateAccountBalance(account, transaction);
+                        transaction = createIncomeTransaction(sc, type);
+                        account.getTransactionList().set(transactionListSize - 1, transaction);
+                        accountBalance += transaction.getValue();
+                        account.setAccountBalance(accountBalance);
+
+                        System.out.println("A transação foi editada com sucesso!!");
                         keepGoing = false;
 
                     } else if (type.equalsIgnoreCase("D")) {
-                        double accountBalance = updateAccountBalance(AccountNumberFind, transaction);
+                        double accountBalance = updateAccountBalance(account, transaction);
                         transaction = createExpenseTransaction(sc, type);
-                        AccountNumberFind.getTransactionList().set(transactionListSize - 1, transaction);
-                        accountBalance += transaction.getValue();
-                        AccountNumberFind.setAccountBalance(accountBalance);
+                        account.getTransactionList().set(transactionListSize - 1, transaction);
+                        accountBalance -= transaction.getValue();
+                        account.setAccountBalance(accountBalance);
 
-                        System.out.println("A última transação foi editada com sucesso!!");
+                        System.out.println("A transação foi editada com sucesso!!");
                         keepGoing = false;
 
                     } else {
-                        System.out.println("Opção inválida!! Por favor, responda com 'R' ou 'D' !!");
+                        System.out.println("Opção inválida! Por favor, responda com 'R' ou 'D' !!");
                     }
 
                 } else if (chosenOption.equalsIgnoreCase("S")) {
                     keepGoing = false;
 
                 } else {
-                    System.out.println("Opção inválida!! Por favor, responda com 'E' ou 'S' !!");
+                    System.out.println("Opção inválida! Por favor, responda com 'E' ou 'S' !!");
                 }
             }
         }
@@ -260,7 +261,7 @@ public class Service {
                 System.out.println("O saldo atual da conta nº. " + destinationAccountFind.getAccountNumber() + " é R$ " + destinationAccountFind.getAccountBalance());
                 keepGoing = false;
             } else {
-                System.out.println("O saldo é insuficiente para concluir a transação!!");
+                System.out.println("O saldo é insuficiente para concluir a transação! Digite novamente!!");
             }
         }
     }
@@ -308,9 +309,9 @@ public class Service {
         List<Account> allAccounts = repositoryAccount.listAll();
         LocalDate currentDateMinusSixMonths = LocalDate.now().minusMonths(6);
 
-        Map<Month, List<Transaction>> mapTransactionsByMonth = new HashMap<>();
-
         for (Account account : allAccounts) {
+            Map<Month, List<Transaction>> mapTransactionsByMonth = new HashMap<>();
+
             for (Transaction transaction : account.getTransactionList()) {
                 if (transaction.getDate().isAfter(currentDateMinusSixMonths)) {
                     mapTransactionsByMonth.putIfAbsent(transaction.getDate().getMonth(), new ArrayList<>());
@@ -383,7 +384,7 @@ public class Service {
     private Account findAccount(Scanner sc, int accountNumber) {
         Account account = repositoryAccount.getAccount(accountNumber);
         while (account == null) {
-            System.out.println("Está conta não existe!! Digite uma conta válida!!");
+            System.out.println("Está conta não existe! Digite uma conta válida!!");
             String accountText = sc.nextLine();
             int newAccountNumber = Validator.validateAccountNumber(ConvertNumber.convertToInt(accountText), sc);
             account = repositoryAccount.getAccount(newAccountNumber);

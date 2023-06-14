@@ -64,14 +64,14 @@ public class Validator {
             LocalDate localDate = LocalDate.parse(dateText, formatter);
             return validateFutureDate(localDate);
         } catch (DateTimeParseException dateTimeParseException) {
-            System.out.println("Data inválida!! Digite novamente!!");
+            System.out.println("Data inválida! Digite novamente!!");
         }
         return null;
     }
 
     public static LocalDate validateFutureDate(LocalDate localDate) {
         if (localDate.isAfter(LocalDate.now())) {
-            System.out.println("O sistema não trabalha com agendamentos!!");
+            System.out.println("O sistema não trabalha com agendamentos! Digite novamente!!");
             return null;
         }
         return localDate;
